@@ -138,31 +138,31 @@ class _ClassifyV1State extends State<ClassifyV1> {
       ),
       body: Column(
         children: [
-          const SizedBox(
-            height: 5.0,
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * .65,
-            width: MediaQuery.of(context).size.width,
-            child: _image != null
-                ? GestureDetector(
-                    onDoubleTap: () => getImage(),
-                    child: Image.file(_image!),
-                  )
-                : GestureDetector(
-                    onDoubleTap: () => getImage(),
-                    child: Container(
-                      color: Colors.amber,
-                      child: const Center(
-                        child: Text(
-                          'Double Tap the Screen to Capture an Image',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 70.0, fontWeight: FontWeight.w400),
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+              height: MediaQuery.of(context).size.height * .65,
+              width: MediaQuery.of(context).size.width,
+              child: _image != null
+                  ? GestureDetector(
+                      onDoubleTap: () => getImage(),
+                      child: Image.file(_image!),
+                    )
+                  : GestureDetector(
+                      onDoubleTap: () => getImage(),
+                      child: Container(
+                        color: Colors.amber,
+                        child: const Center(
+                          child: Text(
+                            'Double Tap the Screen to Capture an Image',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 70.0, fontWeight: FontWeight.w400),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+            ),
           ),
           const SizedBox(
             height: 5.0,
