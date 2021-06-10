@@ -1,0 +1,15 @@
+1 peso
+10 peso
+100 peso
+1000 peso
+20 peso
+20 peso coin
+200 peso
+25 cent
+5 peso
+50 peso 
+500 peso
+old 1 peso
+old 10 peso
+old 25 cent
+old 5 peso
