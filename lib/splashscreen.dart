@@ -14,7 +14,7 @@ class SplashScreen extends StatelessWidget {
       splashIconSize: 200.0,
       splashTransition: SplashTransition.slideTransition,
       pageTransitionType: PageTransitionType.fade,
-      nextScreen: const CamClassify(),
+      nextScreen: const ClassifyV1(),
     );
   }
 }
