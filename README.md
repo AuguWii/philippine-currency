@@ -1,6 +1,6 @@
 # ph_currency_f_v1
 
-A new Flutter project.
+Philippine Currency note Detector (Bills and Coins).
 
 ## Getting Started
 
