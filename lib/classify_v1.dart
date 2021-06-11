@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 
@@ -13,11 +14,12 @@ class ClassifyV1 extends StatefulWidget {
 }
 
 class _ClassifyV1State extends State<ClassifyV1> {
-  //FlutterTts flutterTts = FlutterTts();
+  FlutterTts flutterTts = FlutterTts();
   File? _image;
   final picker = ImagePicker();
 
-  bool outputLoaded = false;
+  bool _outputLoaded = false;
+  bool _outputTTS = false;
   String result = '';
   String _name = "";
   late ImagePicker imagePicker;
@@ -29,9 +31,9 @@ class _ClassifyV1State extends State<ClassifyV1> {
   }
 
   //TO-DO load model files
+  //--------------------------------------------
   loadModelFiles() async {
     Tflite.close();
-    //String?
     String? res = await Tflite.loadModel(
         model: "assets/lite_model_87.tflite",
         labels: "assets/labels.txt",
@@ -43,51 +45,6 @@ class _ClassifyV1State extends State<ClassifyV1> {
         );
     print(res);
   }
-
-  //run inference and show results
-  doImageClassification() async {
-    int startTime = DateTime.now().millisecondsSinceEpoch;
-    var recognitions = await Tflite.runModelOnImage(
-        path: _image!.path, // required
-        imageMean: 0.0, // defaults to 117.0
-        imageStd: 255.0, // 255.0  defaults to 1.0
-        numResults: 1, // defaults to 5
-        threshold: 0.3, // defaults to 0.1
-        asynch: true // defaults to true
-        );
-    print(recognitions!.length.toString());
-
-    setState(() {
-      result = "";
-    });
-    int endTime = DateTime.now().millisecondsSinceEpoch;
-    print("Inference took ${endTime - startTime}ms");
-
-    for (var re in recognitions) {
-      setState(() {
-        outputLoaded = true;
-        print(re.toString());
-        _name = re["label"];
-        result += re["label"] +
-            " " +
-            (re["confidence"] as double).toStringAsFixed(2) +
-            "\n";
-      });
-    }
-  }
-
-  //load|capture an image from camera
-  // _imgFromCamera() async {
-  //   PickedFile? pickedFile =
-  //       await imagePicker.getImage(source: ImageSource.camera);
-  //   _image = File(pickedFile!.path);
-
-  //   setState(() {
-  //     _image;
-  //     imageLoaded = true;
-  //     doImageClassification();
-  //   });
-  // }
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
@@ -102,15 +59,41 @@ class _ClassifyV1State extends State<ClassifyV1> {
     });
   }
 
-  // _imgFromGallery() async {
-  //   PickedFile pickedFile =
-  //   await imagePicker.getImage(source: ImageSource.gallery);
-  //   _image = File(pickedFile.path);
-  //   setState(() {
-  //     _image;
-  //     doImageClassification();
-  //   });
-  // }
+  //run inference and show results
+  doImageClassification() async {
+    int startTime = DateTime.now().millisecondsSinceEpoch;
+    var recognitions = await Tflite.runModelOnImage(
+        path: _image!.path, // required
+        imageMean: 0.0, // defaults to 117.0
+        imageStd: 255.0, // 255.0  defaults to 1.0
+        numResults: 1, // defaults to 5
+        threshold: 2.5, // defaults to 0.1
+        asynch: true // defaults to true
+        );
+    print(recognitions!.length.toString());
+
+    setState(() {
+      result = "";
+      _outputLoaded = false;
+      _outputTTS = false;
+    });
+    int endTime = DateTime.now().millisecondsSinceEpoch;
+
+    print("Inference took ${endTime - startTime}ms");
+    for (var output in recognitions) {
+      setState(() {
+        print(output.toString());
+        _name = output["label"];
+        result += output["label"] +
+            " " +
+            (output["confidence"] as double).toStringAsFixed(2) +
+            "\n";
+
+        _outputLoaded = true;
+        _outputTTS = true;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -122,7 +105,7 @@ class _ClassifyV1State extends State<ClassifyV1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.amber,
         elevation: 0.0,
@@ -132,6 +115,7 @@ class _ClassifyV1State extends State<ClassifyV1> {
             color: Colors.black,
             letterSpacing: 2,
             wordSpacing: 2,
+            fontSize: 30,
           ),
         ),
         centerTitle: true,
@@ -141,17 +125,40 @@ class _ClassifyV1State extends State<ClassifyV1> {
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Container(
-              height: MediaQuery.of(context).size.height * .65,
+              height: MediaQuery.of(context).size.height * .80,
               width: MediaQuery.of(context).size.width,
               child: _image != null
                   ? GestureDetector(
                       onDoubleTap: () => getImage(),
-                      child: Image.file(_image!),
+                      child: Column(
+                        children: [
+                          Image.file(_image!),
+                          // Center(
+                          //   child: _outputTTS ? outputTTS() : outputTTSerror(),
+                          // ),
+                          _outputLoaded
+                              ? Text(
+                                  ' $_name ',
+                                  style: const TextStyle(
+                                    fontSize: 40.0,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                )
+                              : const Text(
+                                  'Can\'t recognize the image. Try again.',
+                                  style: TextStyle(
+                                    fontSize: 40.0,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                        ],
+                      ),
                     )
                   : GestureDetector(
                       onDoubleTap: () => getImage(),
                       child: Container(
-                        color: Colors.amber,
+                        color: Colors.amber.shade400,
                         child: const Center(
                           child: Text(
                             'Double Tap the Screen to Capture an Image',
@@ -164,26 +171,31 @@ class _ClassifyV1State extends State<ClassifyV1> {
                     ),
             ),
           ),
-          const SizedBox(
-            height: 5.0,
-          ),
-          Text(
-            'Currency: $_name',
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-          ),
-          const Spacer(),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 80.0,
-            color: Colors.grey,
-            child: const Icon(
-              CupertinoIcons.photo_camera,
-              size: 70,
-            ),
-          )
         ],
       ),
+      floatingActionButton: Container(
+        color: Colors.grey.shade400,
+        height: MediaQuery.of(context).size.height * 0.08,
+        width: MediaQuery.of(context).size.width,
+        child: IconButton(
+          icon: const Icon(
+            Icons.camera_alt_outlined,
+            size: 50,
+          ),
+          onPressed: () => getImage(),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+
+  outputTTS() {
+    flutterTts.speak('You have $_name');
+    flutterTts.setSpeechRate(0.8);
+  }
+
+  outputTTSerror() {
+    flutterTts.speak('Can not recognize the image. Try Again');
+    flutterTts.setSpeechRate(0.8);
   }
 }

@@ -1,7 +1,8 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:ph_currency_f_v1/capture.dart';
 import 'package:page_transition/page_transition.dart';
+
+import 'classify_v1.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class SplashScreen extends StatelessWidget {
       splash: Image.asset('assets/icon_ph.png'),
       splashIconSize: 200.0,
       splashTransition: SplashTransition.slideTransition,
-      pageTransitionType: PageTransitionType.fade,
+      pageTransitionType: PageTransitionType.bottomToTop,
       nextScreen: const ClassifyV1(),
     );
   }
