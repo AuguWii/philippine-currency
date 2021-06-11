@@ -120,58 +120,62 @@ class _ClassifyV1State extends State<ClassifyV1> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Container(
-              height: MediaQuery.of(context).size.height * .80,
-              width: MediaQuery.of(context).size.width,
-              child: _image != null
-                  ? GestureDetector(
-                      onDoubleTap: () => getImage(),
-                      child: Column(
-                        children: [
-                          Image.file(_image!),
-                          // Center(
-                          //   child: _outputTTS ? outputTTS() : outputTTSerror(),
-                          // ),
-                          _outputLoaded
-                              ? Text(
-                                  ' $_name ',
-                                  style: const TextStyle(
-                                    fontSize: 40.0,
-                                    fontWeight: FontWeight.w400,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.grey.shade100),
+                height: MediaQuery.of(context).size.height * .80,
+                width: MediaQuery.of(context).size.width,
+                child: _image != null
+                    ? GestureDetector(
+                        onDoubleTap: () => getImage(),
+                        child: Column(
+                          children: [
+                            Image.file(_image!),
+                            Center(
+                              child:
+                                  _outputTTS ? outputTTS() : outputTTSerror(),
+                            ),
+                            _outputLoaded
+                                ? Text(
+                                    ' $_name ',
+                                    style: const TextStyle(
+                                      fontSize: 40.0,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Can\'t recognize the image. Try again.',
+                                    style: TextStyle(
+                                      fontSize: 40.0,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                )
-                              : const Text(
-                                  'Can\'t recognize the image. Try again.',
-                                  style: TextStyle(
-                                    fontSize: 40.0,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                        ],
-                      ),
-                    )
-                  : GestureDetector(
-                      onDoubleTap: () => getImage(),
-                      child: Container(
-                        color: Colors.amber.shade400,
-                        child: const Center(
-                          child: Text(
-                            'Double Tap the Screen to Capture an Image',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 70.0, fontWeight: FontWeight.w400),
+                          ],
+                        ),
+                      )
+                    : GestureDetector(
+                        onDoubleTap: () => getImage(),
+                        child: Container(
+                          color: Colors.amber.shade400,
+                          child: const Center(
+                            child: Text(
+                              'Double Tap the Screen to Capture an Image',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 70.0, fontWeight: FontWeight.w400),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: Container(
         color: Colors.grey.shade400,
